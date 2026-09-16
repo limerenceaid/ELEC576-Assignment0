@@ -13,8 +13,8 @@ from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Preformatt
 # ----------------------------------------------------------------- config ---
 STUDENT   = "Shirou Jing"
 EMAIL     = "sj186@rice.edu"
-GH_USER   = "__GITHUB_USERNAME__"
-REPO_URL  = "__REPO_URL__"
+GH_USER   = "limerenceaid"
+REPO_URL  = "https://github.com/limerenceaid/ELEC576-Assignment0"
 OUT       = "ELEC576_Assignment0_Report.pdf"
 
 INK, MUTED, RULE = colors.HexColor("#0b0b0b"), colors.HexColor("#52514e"), colors.HexColor("#d8d7d2")
@@ -220,8 +220,7 @@ S += [PageBreak(),
       Paragraph("Task 5 &mdash; my VCS account", H2),
       code(f"GitHub username:  {GH_USER}\nProfile:          https://github.com/{GH_USER}", CODE_BIG),
       Paragraph(
-          "The account is registered with my Rice address and has been upgraded through the GitHub "
-          "Student Developer Pack for free private repositories.", BODY),
+          "The repository submitted for Task 6 is hosted under this account.", BODY),
 
       Paragraph("6&nbsp;&nbsp;Integrated Development Environment", H1),
       Paragraph(
