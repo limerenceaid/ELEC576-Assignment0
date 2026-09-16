@@ -21,20 +21,20 @@ INK, MUTED, RULE = colors.HexColor("#0b0b0b"), colors.HexColor("#52514e"), color
 CODEBG = colors.HexColor("#f4f4f2")
 
 ss = getSampleStyleSheet()
-H1 = ParagraphStyle("H1", parent=ss["Heading1"], fontName="Helvetica-Bold",
-                    fontSize=15, leading=19, spaceBefore=16, spaceAfter=7, textColor=INK)
-H2 = ParagraphStyle("H2", parent=ss["Heading2"], fontName="Helvetica-Bold",
-                    fontSize=11, leading=14, spaceBefore=11, spaceAfter=5, textColor=INK)
-BODY = ParagraphStyle("BODY", parent=ss["BodyText"], fontName="Helvetica",
-                      fontSize=9.5, leading=13.5, spaceAfter=7, textColor=INK)
-NOTE = ParagraphStyle("NOTE", parent=BODY, fontSize=8.5, leading=12, textColor=MUTED)
+H1 = ParagraphStyle("H1", parent=ss["Heading1"], fontName="Times-Bold",
+                    fontSize=16, leading=20, spaceBefore=16, spaceAfter=7, textColor=INK)
+H2 = ParagraphStyle("H2", parent=ss["Heading2"], fontName="Times-Bold",
+                    fontSize=11.5, leading=14, spaceBefore=11, spaceAfter=5, textColor=INK)
+BODY = ParagraphStyle("BODY", parent=ss["BodyText"], fontName="Times-Roman",
+                      fontSize=10.5, leading=14.5, spaceAfter=7, textColor=INK)
+NOTE = ParagraphStyle("NOTE", parent=BODY, fontSize=9.5, leading=13, textColor=MUTED)
 CODE = ParagraphStyle("CODE", parent=ss["Code"], fontName="Courier", fontSize=7,
                       leading=8.4, textColor=INK, backColor=CODEBG,
                       borderPadding=5, spaceBefore=3, spaceAfter=8)
 CODE_BIG = ParagraphStyle("CODE_BIG", parent=CODE, fontSize=8.2, leading=10.2)
-TITLE = ParagraphStyle("TITLE", parent=ss["Title"], fontName="Helvetica-Bold",
-                       fontSize=20, leading=25, textColor=INK, spaceAfter=4)
-SUB = ParagraphStyle("SUB", parent=BODY, fontSize=11, leading=15,
+TITLE = ParagraphStyle("TITLE", parent=ss["Title"], fontName="Times-Bold",
+                       fontSize=22, leading=27, textColor=INK, spaceAfter=4)
+SUB = ParagraphStyle("SUB", parent=BODY, fontSize=12, leading=16,
                      alignment=1, textColor=MUTED)
 
 
@@ -60,6 +60,18 @@ def code(text, style=CODE, width=None):
     return Preformatted("\n".join(out), style)
 
 
+def shot(name, width=6.5):
+    """Return the screenshot at screenshots/<name>.png scaled to `width` inches, or None."""
+    import os
+    from reportlab.lib.utils import ImageReader
+    path = f"screenshots/{name}.png"
+    if not os.path.exists(path):
+        return None
+    iw, ih = ImageReader(path).getSize()
+    w = min(width, 6.5) * inch
+    return Image(path, width=w, height=w * ih / iw)
+
+
 def read(p):
     with open(p) as f:
         return f.read()
@@ -67,7 +79,7 @@ def read(p):
 
 def footer(canvas, doc):
     canvas.saveState()
-    canvas.setFont("Helvetica", 7.5)
+    canvas.setFont("Times-Roman", 8.5)
     canvas.setFillColor(MUTED)
     canvas.drawString(0.9 * inch, 0.55 * inch,
                       f"ELEC 576 / COMP 576 - Fall 2026 - Assignment 0 - {STUDENT}")
@@ -103,8 +115,8 @@ S += [Paragraph("1&nbsp;&nbsp;Python Machine Learning Stack (Anaconda)", H1),
           "installer into <font face='Courier'>~/anaconda3</font>, and <font face='Courier'>conda init zsh</font> "
           "was run so that <font face='Courier'>conda</font> is available in new shells. The installation "
           "provides conda 26.5.3 on Python 3.14.6, with 552 packages in the base environment.", BODY),
-      Paragraph("Task 1 &mdash; output of <font face='Courier'>conda info</font>", H2),
-      code(read("outputs/task1_conda_info.txt"), CODE_BIG)]
+      Paragraph("Task 1 &mdash; output of <font face='Courier'>conda info</font>", H2)]
+S += [shot("task1_conda_info") or code(read("outputs/task1_conda_info.txt"), CODE_BIG)]
 
 info_head = "\n".join(read("outputs/task1_conda_list.txt").split("\n")[:14])
 S += [Paragraph(
@@ -131,7 +143,7 @@ S += [Paragraph("2&nbsp;&nbsp;Transition from MATLAB to Python", H1),
           "(<font face='Courier'>default_rng(576)</font>) makes the whole transcript reproducible.", BODY),
       Paragraph("Deviations from the table, and why", H2),
       Paragraph(
-          "Seven rows cannot be run exactly as printed. Each is annotated in place in the transcript, "
+          "Eight groups of rows cannot be run exactly as printed. Each is annotated in place in the transcript, "
           "and they are collected here:", BODY)]
 
 devs = [
@@ -168,6 +180,11 @@ S += [Spacer(1, 6),
           "<font face='Courier'>Out[ ]</font> pairs below are genuine IPython output.", BODY),
       PageBreak()]
 
+_s2 = shot("task2_ipython")
+if _s2 is not None:
+    S += [Paragraph("The session in the terminal", H2), _s2, Spacer(1, 10),
+          Paragraph("The complete transcript follows as text.", NOTE), PageBreak()]
+
 # the transcript, split at row separators so pages break at natural points
 transcript = read("outputs/task2_transcript.txt")
 chunks, buf = [], []
@@ -196,7 +213,7 @@ S += [PageBreak(),
           "<font face='Courier'>UserWarning</font> that it cannot display interactively, which is expected "
           "and does not affect the figure.", BODY),
       Spacer(1, 4),
-      Image("figures/task3.png", width=4.4 * inch, height=3.23 * inch),
+      shot("task3_figure", 4.6) or Image("figures/task3.png", width=4.4 * inch, height=3.23 * inch),
       PageBreak()]
 
 # --------------------------------------------------------------- task 4 ----
@@ -209,7 +226,7 @@ S += [Paragraph("4&nbsp;&nbsp;Plotting &mdash; a figure of my own", H1),
           "product of many such factors vanishes exponentially with depth. ReLU's derivative is exactly 1 "
           "on the positive half-line, so the gradient passes through unattenuated.", BODY),
       Spacer(1, 4),
-      Image("figures/task4.png", width=6.5 * inch, height=2.73 * inch),
+      shot("task4_figure") or Image("figures/task4.png", width=6.5 * inch, height=2.73 * inch),
       Spacer(1, 8),
       Paragraph("Code", H2),
       code(read("task4_plot.py"), CODE)]
