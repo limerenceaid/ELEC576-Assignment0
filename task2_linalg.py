@@ -7,6 +7,7 @@ inside IPython and record the transcript.
 Run with:  ipython task2_linalg.py
 """
 import re
+import textwrap
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.utils.capture import capture_output
 
@@ -16,8 +17,12 @@ shell.colors = "NoColor"
 _n = 0
 
 
-def run(cmd, quiet=False):
-    """Execute one line in the IPython shell and echo it as an In/Out pair."""
+def run(cmd, seen=None):
+    """Execute one line in the IPython shell and echo it as an In/Out pair.
+
+    Within a row, a spelling that reproduces an earlier spelling's output exactly
+    is reported as such instead of reprinting the whole array.
+    """
     global _n
     _n += 1
     print(f"In [{_n}]: {cmd}")
@@ -27,22 +32,29 @@ def run(cmd, quiet=False):
     if res.result is not None and not body:
         body = repr(res.result)
     body = re.sub(r"^Out\[\d+\]:", f"Out[{_n}]:", body, flags=re.M)
+    if body and seen is not None and body.count("\n") >= 2:
+        key = re.sub(r"^Out\[\d+\]:", "", body, flags=re.M)
+        if key in seen:
+            print(f"Out[{_n}]: identical to Out[{seen[key]}]")
+            body = ""
+        else:
+            seen[key] = _n
     if body:
-        for line in body.split("\n"):
-            print(f"         {line}" if not line.startswith("Out") else line)
+        print(body)
     if res.error_in_exec is not None:
         print(f"         {type(res.error_in_exec).__name__}: {res.error_in_exec}")
-    print()
 
 
 def row(num, matlab, cmds, note=None):
-    print("=" * 78)
-    print(f"Row {num:2d}   MATLAB:  {matlab}")
+    hdr = f"--- Row {num} --- MATLAB: {matlab} "
+    print("\n" + hdr + "-" * max(3, 78 - len(hdr)))
     if note:
-        print(f"         NOTE:    {note}")
-    print("=" * 78)
+        for ln in textwrap.wrap(note, width=74, initial_indent="    note: ",
+                                subsequent_indent="          "):
+            print(ln)
+    seen = {}
     for c in cmds:
-        run(c)
+        run(c, seen)
 
 
 # ---------------------------------------------------------------- setup ----
@@ -72,15 +84,7 @@ SETUP = [
     "v",
 ]
 
-print("#" * 78)
-print("# TASK 2 - Linear Algebra Equivalents, NumPy for MATLAB Users")
-print("# Every command below was executed in IPython. Matrices are 5x5 with")
-print("# entries drawn uniformly from [0,1) and rounded to 2 decimals.")
-print("#" * 78)
-print()
-print("=" * 78)
-print("Row  0   SETUP")
-print("=" * 78)
+print("--- Setup " + "-" * 68)
 for s in SETUP:
     run(s)
 
@@ -186,6 +190,4 @@ row(81, "unique(a)", ["np.unique(a)"])
 row(82, "squeeze(a)", ["np.zeros((1, 3, 1, 4)).squeeze()", "np.zeros((1, 3, 1, 4)).squeeze().shape"],
     "a has no singleton dimensions, so a 1x3x1x4 array is used to show the effect.")
 
-print("#" * 78)
-print(f"# End of Task 2. {_n} IPython cells executed, all 82 table rows covered.")
-print("#" * 78)
+print(f"\n--- End of Task 2: {_n} cells, all 82 table rows covered. " + "-" * 20)

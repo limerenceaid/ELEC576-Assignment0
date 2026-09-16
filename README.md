@@ -12,6 +12,7 @@ Report: [`ELEC576_Assignment0_Report.pdf`](ELEC576_Assignment0_Report.pdf)
 | `outputs/task2_transcript.txt` | 2 | the resulting 161-cell transcript |
 | `task3_plot.py` → `figures/task3.png` | 3 | the assignment's plotting script |
 | `task4_plot.py` → `figures/task4.png` | 4 | activation functions and their derivatives |
+| `screenshots/task1_conda_info.png` | 1 | terminal capture pasted into the report |
 | `make_report.py` | — | builds the PDF from the files above |
 
 ## Reproduce
