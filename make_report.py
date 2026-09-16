@@ -63,18 +63,6 @@ def read(p):
         return f.read()
 
 
-def footer(canvas, doc):
-    canvas.saveState()
-    canvas.setFont("Times-Roman", 8)
-    canvas.setFillColor(MUTED)
-    canvas.drawString(0.85 * inch, 0.52 * inch,
-                      f"ELEC 576 / COMP 576 - Fall 2026 - Assignment 0 - {STUDENT}")
-    canvas.drawRightString(letter[0] - 0.85 * inch, 0.52 * inch, str(doc.page))
-    canvas.setStrokeColor(RULE); canvas.setLineWidth(0.5)
-    canvas.line(0.85 * inch, 0.68 * inch, letter[0] - 0.85 * inch, 0.68 * inch)
-    canvas.restoreState()
-
-
 S = [Paragraph("Assignment 0", TITLE),
      Paragraph(f"{STUDENT} &nbsp;&middot;&nbsp; Rice ID: {RICE_ID}", BYLINE)]
 
@@ -189,7 +177,7 @@ S += [KeepTogether([
 
 doc = SimpleDocTemplate(OUT, pagesize=letter,
                         leftMargin=0.85 * inch, rightMargin=0.85 * inch,
-                        topMargin=0.8 * inch, bottomMargin=0.85 * inch,
+                        topMargin=0.8 * inch, bottomMargin=0.7 * inch,
                         title=f"ELEC 576 Assignment 0 - {STUDENT}", author=STUDENT)
-doc.build(S, onFirstPage=footer, onLaterPages=footer)
+doc.build(S)
 print(f"wrote {OUT}")

@@ -24,6 +24,7 @@ def run(cmd, seen=None):
     is reported as such instead of reprinting the whole array.
     """
     global _n
+    cmd = re.sub(r"\s+#.*$", "", cmd)
     _n += 1
     print(f"In [{_n}]: {cmd}")
     with capture_output() as cap:
@@ -48,10 +49,6 @@ def run(cmd, seen=None):
 def row(num, matlab, cmds, note=None):
     hdr = f"--- Row {num} --- MATLAB: {matlab} "
     print("\n" + hdr + "-" * max(3, 78 - len(hdr)))
-    if note:
-        for ln in textwrap.wrap(note, width=74, initial_indent="    note: ",
-                                subsequent_indent="          "):
-            print(ln)
     seen = {}
     for c in cmds:
         run(c, seen)

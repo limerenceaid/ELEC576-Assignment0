@@ -4,7 +4,7 @@ In [2]: import scipy.linalg
 In [3]: from numpy.random import default_rng
 In [4]: from scipy import signal
 In [5]: from scipy.sparse.linalg import eigs, cg
-In [6]: linalg = scipy.linalg          # the assignment asks us to import scipy.linalg
+In [6]: linalg = scipy.linalg
 In [7]: np.set_printoptions(precision=4, suppress=True, linewidth=100)
 In [8]: seed = default_rng(576)
 In [9]: a = np.round(seed.random((5, 5)), 2)
@@ -14,11 +14,11 @@ In [12]: d = np.round(seed.random((5, 5)), 2)
 In [13]: v = np.round(seed.random(5), 2)
 In [14]: x = a.copy()
 In [15]: m, n, q = 2, 2, 2
-In [16]: ai = seed.integers(0, 8, (5, 5))          # integer arrays, for the bitwise rows
+In [16]: ai = seed.integers(0, 8, (5, 5))
 In [17]: bi = seed.integers(0, 8, (5, 5))
-In [18]: spd = a @ a.T + 5 * np.eye(5)             # symmetric positive definite, for chol / cg
-In [19]: sig = np.round(seed.random(12), 2)        # a 1-D signal, for resample
-In [20]: a_orig = a.copy()                         # kept so the in-place rows can be undone
+In [18]: spd = a @ a.T + 5 * np.eye(5)
+In [19]: sig = np.round(seed.random(12), 2)
+In [20]: a_orig = a.copy()
 In [21]: a
 Out[21]: 
 array([[0.81, 0.86, 0.94, 0.06, 0.4 ],
@@ -115,7 +115,6 @@ array([[0.81, 0.86, 0.94, 0.06, 0.4 ],
        [0.2 , 0.8 , 0.66, 0.28, 0.12]])
 
 --- Row 12 --- MATLAB: a(1:3,5:9) --------------------------------------------
-    note: a is 5x5, so columns 5..9 resolve to the single column 5.
 In [41]: a[0:3, 4:9]
 Out[41]: 
 array([[0.4 ],
@@ -253,7 +252,6 @@ array([[0.81, 0.86, 0.94, 0.4 ],
        [0.2 , 0.8 , 0.66, 0.12]])
 
 --- Row 28 --- MATLAB: a(a<0.5)=0 --------------------------------------------
-    note: This row assigns in place, so a is restored afterwards.
 In [59]: a[a < 0.5] = 0
 In [60]: a
 Out[60]: 
@@ -262,7 +260,7 @@ array([[0.81, 0.86, 0.94, 0.  , 0.  ],
        [0.54, 0.82, 0.  , 0.  , 0.86],
        [0.54, 0.58, 0.88, 0.78, 0.  ],
        [0.  , 0.8 , 0.66, 0.  , 0.  ]])
-In [61]: a = a_orig.copy()   # undo, so later rows see the original a
+In [61]: a = a_orig.copy()
 
 --- Row 29 --- MATLAB: a .* (a>0.5) ------------------------------------------
 In [62]: a * (a > 0.5)
@@ -274,7 +272,6 @@ array([[0.81, 0.86, 0.94, 0.  , 0.  ],
        [0.  , 0.8 , 0.66, 0.  , 0.  ]])
 
 --- Row 30 --- MATLAB: a(:) = 3 ----------------------------------------------
-    note: Also in place; a is restored afterwards.
 In [63]: a[:] = 3
 In [64]: a
 Out[64]: 
@@ -283,7 +280,7 @@ array([[3., 3., 3., 3., 3.],
        [3., 3., 3., 3., 3.],
        [3., 3., 3., 3., 3.],
        [3., 3., 3., 3., 3.]])
-In [65]: a = a_orig.copy()   # undo again
+In [65]: a = a_orig.copy()
 
 --- Row 31 --- MATLAB: y=x ---------------------------------------------------
 In [66]: y = x.copy()
@@ -440,9 +437,6 @@ Out[90]:
         [5., 5., 5., 5., 5., 5., 5., 5., 5.]]))
 
 --- Row 46 --- MATLAB: (best way to eval functions on a grid) ----------------
-    note: The table prints np.ix_(np.r_[0:9.],np.r_[0:6.] - a missing
-          paren, and float indices raise IndexError. Integer ranges are
-          used here.
 In [91]: np.ogrid[0:9., 0:6.]
 Out[91]: 
 (array([[0.],
@@ -563,8 +557,6 @@ In [109]: np.linalg.norm(v)
 Out[109]: np.float64(1.586379525838631)
 
 --- Row 57 --- MATLAB: a & b -------------------------------------------------
-    note: The table writes a bare logical_and; it lives in the np
-          namespace.
 In [110]: np.logical_and(a, b)
 Out[110]: 
 array([[ True,  True,  True,  True,  True],
@@ -583,8 +575,6 @@ array([[ True,  True,  True,  True,  True],
        [ True,  True,  True,  True,  True]])
 
 --- Row 59 --- MATLAB: bitand(a,b) -------------------------------------------
-    note: Bitwise operators need integer arrays, so the integer pair ai,
-          bi is used.
 In [112]: ai & bi
 Out[112]: 
 array([[2, 2, 0, 0, 0],
@@ -594,7 +584,6 @@ array([[2, 2, 0, 0, 0],
        [1, 2, 7, 0, 1]])
 
 --- Row 60 --- MATLAB: bitor(a,b) --------------------------------------------
-    note: Same as row 59.
 In [113]: ai | bi
 Out[113]: 
 array([[2, 7, 7, 0, 3],
@@ -645,8 +634,6 @@ Out[118]:
  array([2.7835, 0.7063, 0.6235, 0.5049, 0.1221]))
 
 --- Row 65 --- MATLAB: b/a ---------------------------------------------------
-    note: The table says 'Solve a.T x.T = b.T instead'; that is written
-          out here.
 In [119]: linalg.solve(a.T, b.T).T
 Out[119]: 
 array([[ 1.5654, -1.2941,  0.0639,  1.0225, -1.5294],
@@ -675,8 +662,6 @@ array([[-0.4806, -0.2025,  0.7604, -0.2636, -0.2834],
        [-0.3088, -0.6881, -0.0457,  0.4747,  0.4513]])
 
 --- Row 67 --- MATLAB: chol(a) -----------------------------------------------
-    note: Cholesky needs a positive definite matrix, so spd = a @ a.T + 5I
-          is used.
 In [124]: linalg.cholesky(spd)
 Out[124]: 
 array([[2.7282, 0.5553, 0.6992, 0.6943, 0.5627],
@@ -710,17 +695,16 @@ array([[ 0.0841+0.j    , -0.1273+0.j    ,  0.0112+0.j    ,  0.2637+0.1323j,  0.2
        [-0.301 +0.j    , -0.1263+0.j    ,  0.3761+0.j    ,  0.5258-0.236j ,  0.5258+0.236j ]])
 
 --- Row 70 --- MATLAB: [V,D]=eigs(a,3) ---------------------------------------
-    note: eigs comes from scipy.sparse.linalg and needs k < n-1.
 In [131]: D, V = eigs(a, k=3)
 In [132]: D
 Out[132]: array([ 2.652 +0.j,  0.5534+0.j, -0.6227+0.j])
 In [133]: V
 Out[133]: 
-array([[-0.5051+0.j, -0.4778+0.j, -0.3539+0.j],
-       [-0.3841+0.j, -0.1696+0.j,  0.384 +0.j],
-       [-0.4611+0.j,  0.1419+0.j,  0.485 +0.j],
-       [-0.5195+0.j,  0.8228+0.j, -0.2275+0.j],
-       [-0.3389+0.j,  0.2142+0.j, -0.6636+0.j]])
+array([[ 0.5051+0.j,  0.4778+0.j, -0.3539+0.j],
+       [ 0.3841+0.j,  0.1696+0.j,  0.384 +0.j],
+       [ 0.4611+0.j, -0.1419+0.j,  0.485 +0.j],
+       [ 0.5195+0.j, -0.8228+0.j, -0.2275+0.j],
+       [ 0.3389+0.j, -0.2142+0.j, -0.6636+0.j]])
 
 --- Row 71 --- MATLAB: [Q,R]=qr(a,0) -----------------------------------------
 In [134]: Q, R = linalg.qr(a)
@@ -766,7 +750,6 @@ In [141]: np.allclose(a, P @ L @ U)
 Out[141]: True
 
 --- Row 73 --- MATLAB: conjgrad ----------------------------------------------
-    note: cg is scipy's conjugate gradient solver; it needs an SPD system.
 In [142]: cg(spd, v)
 Out[142]: (array([ 0.0327,  0.1116,  0.0572, -0.001 ,  0.0916]), 0)
 
@@ -803,7 +786,7 @@ array([[0.2 , 0.3 , 0.43, 0.06, 0.12],
        [0.54, 0.8 , 0.66, 0.28, 0.28],
        [0.81, 0.82, 0.88, 0.31, 0.4 ],
        [0.88, 0.86, 0.94, 0.78, 0.86]])
-In [147]: a = a_orig.copy()   # sort is in place
+In [147]: a = a_orig.copy()
 
 --- Row 77 --- MATLAB: sort(a, 2) --------------------------------------------
 In [148]: np.sort(a, axis=1)
@@ -830,7 +813,7 @@ array([[0.2 , 0.8 , 0.66, 0.28, 0.12],
        [0.88, 0.3 , 0.44, 0.31, 0.28]])
 
 --- Row 79 --- MATLAB: x = Z\y -----------------------------------------------
-In [154]: Z = a; y = v   # rebind, rows 31-33 reassigned x and y
+In [154]: Z = a; y = v
 In [155]: x = linalg.lstsq(Z, y)
 In [156]: x
 Out[156]: 
@@ -840,8 +823,6 @@ Out[156]:
  array([2.7835, 0.7063, 0.6235, 0.5049, 0.1221]))
 
 --- Row 80 --- MATLAB: decimate(x, q) ----------------------------------------
-    note: np.ceil returns a float; resample needs an int, so int(...) is
-          applied.
 In [157]: sig
 Out[157]: array([0.1 , 0.97, 0.58, 0.35, 0.15, 0.62, 0.88, 0.44, 0.48, 0.32, 0.47, 0.98])
 In [158]: signal.resample(sig, int(np.ceil(len(sig)/q)))
@@ -854,8 +835,6 @@ array([0.06, 0.12, 0.2 , 0.21, 0.28, 0.3 , 0.31, 0.4 , 0.43, 0.44, 0.54, 0.58, 0
        0.81, 0.82, 0.86, 0.88, 0.94])
 
 --- Row 82 --- MATLAB: squeeze(a) --------------------------------------------
-    note: a has no singleton dimensions, so a 1x3x1x4 array is used to
-          show the effect.
 In [160]: np.zeros((1, 3, 1, 4)).squeeze()
 Out[160]: 
 array([[0., 0., 0., 0.],
